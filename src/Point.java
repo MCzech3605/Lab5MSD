@@ -8,14 +8,16 @@ public class Point {
 	public static int prob_appear = 20;
 	public int velocity;
 	public Point[] frontNeighbors;
-	public Point[] otherLaneNeighbors;
+	public Point[] leftLaneNeighbors;
+	public Point[] rightLaneNeighbors;
 	public boolean hasCar;
 
 	public Point() {
 		clear();
 		frontNeighbors = new Point[6];
 		hasCar = false;
-		otherLaneNeighbors = new Point[11];
+		leftLaneNeighbors = new Point[11];
+		rightLaneNeighbors = new Point[11];
 	}
 
 	public void clicked() {

@@ -79,7 +79,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 					points[x][y].frontNeighbors[i] = points[(x+i+1)%points.length][y];
 				}
 				for(int i = -5; i <= 5; i++){
-					points[x][y].otherLaneNeighbors[i+5] = points[(points.length+x+i)%points.length][(y+1)%2];
+					points[x][y].leftLaneNeighbors[i+5] = points[(points.length+x+i)%points.length][(y+1)%2];
 				}
 			}
 		}
