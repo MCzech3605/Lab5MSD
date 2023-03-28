@@ -15,6 +15,17 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	private int size = 10;
 	public int editType=0;
 
+	public static final int lineNumber = 2;
+
+	public Point[][] copyPoints(){
+		Point[][] copyPair = new Point[points.length][lineNumber];
+		for(int i = 0; i < lineNumber; i++){
+			for(int j = 0; j < points.length; j++){
+				copyPair[j][i] = points[j][i];
+			}
+		}
+		return copyPair;
+	}
 	public Board(int length, int height) {
 		initialize(length, height);
 		addMouseListener(this);
@@ -25,6 +36,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	}
 
 	public void iteration() {
+
 //		for(int x = 0; x < points.length; x++){
 //			points[x][0].updateVelocity();
 //		}
