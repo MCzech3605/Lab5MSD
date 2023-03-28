@@ -67,17 +67,22 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 				points[x][y] = new Point();
 
 		for(int i=0; i<random_points_min; i++){
-//			points[rand_loc[i]][0].clicked();
+			if(i%2==0)
+				points[rand_loc[i]][0].clicked();
+			else
+				points[rand_loc[i]][1].clicked();
 		}
 
 		for (int x = 0; x < points.length; ++x) {
-			for (int y = 0; y < points[x].length; ++y) {
+			for (int y = 0; y < 2; ++y) {
 				for(int i = 0; i <= 5; i++){
 					points[x][y].frontNeighbors[i] = points[(x+i+1)%points.length][y];
 				}
+				for(int i = -5; i <= 5; i++){
+					points[x][y].otherLaneNeighbors[i+5] = points[(points.length+x+i)%points.length][(y+1)%2];
+				}
 			}
 		}
-		//todo new initialize
 	}
 
 	protected void paintComponent(Graphics g) {
