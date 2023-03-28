@@ -23,7 +23,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		Point[][] copyPair = new Point[points.length][lineNumber];
 		for(int i = 0; i < lineNumber; i++){
 			for(int j = 0; j < points.length; j++){
-				copyPair[j][i] = points[j][i];
+				copyPair[j][i] = new Point();
+				copyPair[j][i].copyFromOther(points[j][i]);
 			}
 		}
 		return copyPair;
@@ -51,13 +52,13 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	public void iteration() {
 		//todo change lines
 
-		Point[][] pointsBuffer = copyPoints();
-
-		for(int x = 0; x < pointsBuffer.length; x++){
+		for(int x = 0; x < points.length; x++){
 			for(int y = 0; y < lineNumber; y++){
-				pointsBuffer[x][y].updateVelocity();
+				points[x][y].updateVelocity();
 			}
 		}
+
+		Point[][] pointsBuffer = copyPoints();
 
 		for(int x = 0; x < points.length; x++){
 			for(int y = 0; y < lineNumber; y++){
@@ -68,7 +69,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 			for(int y = 0; y < lineNumber; y++){
 				Point oldPoint = pointsBuffer[x][y];
 				if(oldPoint.hasCar){
-					Point newPoint = points[(x+oldPoint.velocity)%points.length][0];
+					Point newPoint = points[(x+oldPoint.velocity)%points.length][y];
 					newPoint.copyFromOther(oldPoint);
 				}
 			}
@@ -87,7 +88,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 	private void initialize(int length, int height) {
 		points = new Point[length][height];
-		int random_points_min = 15;
+		int random_points_min = 45;
 		int[] rand_loc = new int[random_points_min];
 		for(int i = 0; i < random_points_min; i++) {
 			rand_loc[i] = ThreadLocalRandom.current().nextInt(0, length);
