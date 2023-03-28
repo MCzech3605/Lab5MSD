@@ -65,15 +65,19 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 				points[x][y].clear();
 			}
 		}
+		int carsPassed = 0;
 		for(int x = 0; x < points.length; x++){
 			for(int y = 0; y < lineNumber; y++){
 				Point oldPoint = pointsBuffer[x][y];
 				if(oldPoint.hasCar){
 					Point newPoint = points[(x+oldPoint.velocity)%points.length][y];
 					newPoint.copyFromOther(oldPoint);
+					if(x+oldPoint.velocity!=(x+oldPoint.velocity)%points.length)
+						carsPassed++;
 				}
 			}
 		}
+		iterationCounter.add(carsPassed);
 		//todo new iteration
 		this.repaint();
 	}
