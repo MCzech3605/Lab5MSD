@@ -11,11 +11,11 @@ import javax.swing.event.MouseInputListener;
 
 public class Board extends JComponent implements MouseInputListener, ComponentListener {
 	private static final long serialVersionUID = 1L;
+	public static final int lineNumber = 2;
 	private Point[][] points;
 	private int size = 10;
 	public int editType=0;
 
-	public static final int lineNumber = 2;
 
 	public Point[][] copyPoints(){
 		Point[][] copyPair = new Point[points.length][lineNumber];
@@ -98,12 +98,29 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		}
 
 		for (int x = 0; x < points.length; ++x) {
-			for (int y = 0; y < 2; ++y) {
+			for (int y = 0; y < lineNumber; ++y) {
 				for(int i = 0; i <= 5; i++){
 					points[x][y].frontNeighbors[i] = points[(x+i+1)%points.length][y];
 				}
-				for(int i = -5; i <= 5; i++){
-					points[x][y].otherLaneNeighbors[i+5] = points[(points.length+x+i)%points.length][(y+1)%2];
+				if(y > 0){
+					for(int i = -5; i <= 5; i++){
+						points[x][y].leftLaneNeighbors[i+5] = points[(points.length+x+i)%points.length][y-1];
+					}
+				}
+				else {
+					for(int i = -5; i <= 5; i++){
+						points[x][y].leftLaneNeighbors[i+5] = null;
+					}
+				}
+				if(y < lineNumber-1){
+					for(int i = -5; i <= 5; i++){
+						points[x][y].rightLaneNeighbors[i+5] = points[(points.length+x+i)%points.length][y+1];
+					}
+				}
+				else {
+					for(int i = -5; i <= 5; i++){
+						points[x][y].rightLaneNeighbors[i+5] = null;
+					}
 				}
 			}
 		}

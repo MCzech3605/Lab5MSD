@@ -3,22 +3,24 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Point {
 
 	public static Integer []types ={0,1,2};
+	public static final int maxVel = 5;
 	public static int prob_speed = 2;
-	public static int prob_disappear = 20;
-	public static int prob_appear = 20;
 	public int velocity;
 	public Point[] frontNeighbors;
-	public Point[] otherLaneNeighbors;
+	public Point[] leftLaneNeighbors;
+	public Point[] rightLaneNeighbors;
 	public boolean hasCar;
 	public boolean isChangingLineToLeft;
 	public boolean isChangingLineToRight;
 
 	public Point() {
 		clear();
-		frontNeighbors = new Point[6];
+		frontNeighbors = new Point[maxVel+1];
 		hasCar = false;
-		isChangingLine = false;
-		otherLaneNeighbors = new Point[11];
+		isChangingLineToLeft = false;
+		isChangingLineToRight = false;
+		leftLaneNeighbors = new Point[2*maxVel+1];
+		rightLaneNeighbors = new Point[2*maxVel+1];
 	}
 
 	public void clicked() {
@@ -27,7 +29,7 @@ public class Point {
 			velocity = 1;
 		}
 	}
-	
+
 	public void clear() {
 		hasCar = false;
 		velocity = 0;
@@ -61,7 +63,7 @@ public class Point {
 		}
 	}
 	public void accelerate(){
-		if(velocity < 5){
+		if(velocity < maxVel){
 			velocity++;
 		}
 	}
