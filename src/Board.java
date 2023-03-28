@@ -4,6 +4,8 @@ import java.awt.Insets;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JComponent;
@@ -27,11 +29,64 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		return copyPair;
 	}
 
+	public boolean isLeftLineBetter(Point x){
+		if(x.leftLaneNeighbors[5].hasCar)
+			return false;
+		for(int i = 0; i < Point.maxVel; i++)
+			if(x.leftLaneNeighbors[i].hasCar)
+				return false;
+		int cnt = Point.maxVel;
+		for(int i = 1 ; i <= Point.maxVel; i++){
+			if(x.frontNeighbors[i].hasCar == true) {
+				cnt = i;
+				break;
+			}
+		}
+		if(cnt != Point.maxVel){
+			for(int i = 1 ; i <= cnt; i++){
+				if(x.leftLaneNeighbors[i].hasCar == true) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	public boolean isRightLineBetter(Point x){
+		if(x.rightLaneNeighbors[5].hasCar)
+			return false;
+		for(int i = 0; i < Point.maxVel; i++)
+			if(x.rightLaneNeighbors[i].hasCar)
+				return false;
+		int cnt = Point.maxVel;
+		for(int i = 1 ; i <= Point.maxVel; i++){
+			if(x.frontNeighbors[i].hasCar == true) {
+				cnt = i;
+				break;
+			}
+		}
+		if(cnt != Point.maxVel){
+			for(int i = 1 ; i <= cnt; i++){
+				if(x.rightLaneNeighbors[i].hasCar == true) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	public void SetLineChange(){
 		for(int i = 0; i < lineNumber; i++){
 			for(int j = 0; j < points.length; j++){
-				if(points[j][i].hasCar == true){
-					//boolean NeighbourRule = points[j][i]
+				boolean isLeft = false, isRight = false;
+				if(points[j][i].hasCar == true && i != 0)
+					isLeft = isLeftLineBetter(points[j][i]);
+				if(points[j][i].hasCar == true && i != lineNumber-1)
+					isRight = isRightLineBetter(points[j][i]);
+
+				if(isRight == true){
+					points[j][i].isChangingLineToRight = true;
+				}
+				else if(isLeft == true){
+					points[j][i].isChangingLineToLeft = true;
 				}
 			}
 		}
@@ -47,7 +102,21 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	}
 
 	public void iteration() {
-		Point[][] pointsBuffer = copyPoints();
+		
+		SetLineChange();
+
+		for(int i = 0; i < points.length; i++){
+			for(int j = 0; j < lineNumber; j++){
+				if(points[i][j].isChangingLineToRight){
+					points[i][j+1].copyFromOther(points[i][j]);
+					points[i][j].clear();
+				}
+				if(points[i][j].isChangingLineToLeft){
+					points[i][j-1].copyFromOther(points[i][j]);
+					points[i][j].clear();
+				}
+			}
+		}
 
 //		for(int x = 0; x < points.length; x++){
 //			points[x][0].updateVelocity();
