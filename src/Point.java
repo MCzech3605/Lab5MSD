@@ -7,13 +7,13 @@ public class Point {
 	public static int prob_disappear = 20;
 	public static int prob_appear = 20;
 	public int velocity;
-	public Point[] neighbors;
-//	public int type;
+	public Point[] frontNeighbors;
+	public Point[] otherLaneNeighbors;
 	public boolean hasCar;
 
 	public Point() {
 		clear();
-		neighbors = new Point[6];
+		frontNeighbors = new Point[6];
 		hasCar = false;
 	}
 
@@ -32,7 +32,7 @@ public class Point {
 	public void updateVelocity() {
 		boolean carAhead = false;
 		for(int i = 0; i <= velocity; i++){
-			if(neighbors[i].hasCar){
+			if(frontNeighbors[i].hasCar){
 				carAhead = true;
 				break;
 			}
@@ -47,7 +47,7 @@ public class Point {
 	}
 	public void reduceVelocity(){
 		for(int i = 0; i <= velocity; i++){
-			if(neighbors[i].hasCar){
+			if(frontNeighbors[i].hasCar){
 				velocity = i;
 				return;
 			}
@@ -88,4 +88,5 @@ public class Point {
 			}
 		}
 	}
+	//todo changing lanes methods
 }

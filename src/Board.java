@@ -25,23 +25,24 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	}
 
 	public void iteration() {
-		for(int x = 0; x < points.length; x++){
-			points[x][0].updateVelocity();
-		}
-
-		for(int x = 0; x < points.length; x++){
-			points[x][0].clear();
-		}
-		for(int x = 0; x < points.length; x++){
-			Point oldPoint = points[x][1];
-			if(oldPoint.hasCar){
-				Point newPoint = points[(x+oldPoint.velocity)%points.length][0];
-				newPoint.copyFromOther(oldPoint);
-				if((x+oldPoint.velocity)%points.length!=x+oldPoint.velocity)
-					newPoint.maybeDisappear();
-			}
-		}
-		points[0][0].maybeAppear();
+//		for(int x = 0; x < points.length; x++){
+//			points[x][0].updateVelocity();
+//		}
+//
+//		for(int x = 0; x < points.length; x++){
+//			points[x][0].clear();
+//		}
+//		for(int x = 0; x < points.length; x++){
+//			Point oldPoint = points[x][1];
+//			if(oldPoint.hasCar){
+//				Point newPoint = points[(x+oldPoint.velocity)%points.length][0];
+//				newPoint.copyFromOther(oldPoint);
+//				if((x+oldPoint.velocity)%points.length!=x+oldPoint.velocity)
+//					newPoint.maybeDisappear();
+//			}
+//		}
+//		points[0][0].maybeAppear();
+		//todo new iteration
 		this.repaint();
 	}
 
@@ -72,10 +73,11 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		for (int x = 0; x < points.length; ++x) {
 			for (int y = 0; y < points[x].length; ++y) {
 				for(int i = 0; i <= 5; i++){
-					points[x][y].neighbors[i] = points[(x+i+1)%points.length][y];
+					points[x][y].frontNeighbors[i] = points[(x+i+1)%points.length][y];
 				}
 			}
 		}
+		//todo new initialize
 	}
 
 	protected void paintComponent(Graphics g) {
