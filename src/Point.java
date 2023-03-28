@@ -10,11 +10,14 @@ public class Point {
 	public Point[] frontNeighbors;
 	public Point[] otherLaneNeighbors;
 	public boolean hasCar;
+	public boolean isChangingLineToLeft;
+	public boolean isChangingLineToRight;
 
 	public Point() {
 		clear();
 		frontNeighbors = new Point[6];
 		hasCar = false;
+		isChangingLine = false;
 		otherLaneNeighbors = new Point[11];
 	}
 

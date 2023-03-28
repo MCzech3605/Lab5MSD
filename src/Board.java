@@ -26,6 +26,17 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		}
 		return copyPair;
 	}
+
+	public void SetLineChange(){
+		for(int i = 0; i < lineNumber; i++){
+			for(int j = 0; j < points.length; j++){
+				if(points[j][i].hasCar == true){
+					//boolean NeighbourRule = points[j][i]
+				}
+			}
+		}
+	}
+
 	public Board(int length, int height) {
 		initialize(length, height);
 		addMouseListener(this);
@@ -36,6 +47,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	}
 
 	public void iteration() {
+		Point[][] pointsBuffer = copyPoints();
 
 //		for(int x = 0; x < points.length; x++){
 //			points[x][0].updateVelocity();
