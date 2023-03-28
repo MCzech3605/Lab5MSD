@@ -4,6 +4,7 @@ import java.awt.Insets;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JComponent;
@@ -12,6 +13,7 @@ import javax.swing.event.MouseInputListener;
 public class Board extends JComponent implements MouseInputListener, ComponentListener {
 	private static final long serialVersionUID = 1L;
 	public static final int lineNumber = 2;
+	public static ArrayList<Integer> iterationCounter = new ArrayList<>();
 	private Point[][] points;
 	private int size = 10;
 	public int editType=0;
@@ -47,25 +49,30 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	}
 
 	public void iteration() {
+		//todo change lines
+
 		Point[][] pointsBuffer = copyPoints();
 
-//		for(int x = 0; x < points.length; x++){
-//			points[x][0].updateVelocity();
-//		}
-//
-//		for(int x = 0; x < points.length; x++){
-//			points[x][0].clear();
-//		}
-//		for(int x = 0; x < points.length; x++){
-//			Point oldPoint = points[x][1];
-//			if(oldPoint.hasCar){
-//				Point newPoint = points[(x+oldPoint.velocity)%points.length][0];
-//				newPoint.copyFromOther(oldPoint);
-//				if((x+oldPoint.velocity)%points.length!=x+oldPoint.velocity)
-//					newPoint.maybeDisappear();
-//			}
-//		}
-//		points[0][0].maybeAppear();
+		for(int x = 0; x < pointsBuffer.length; x++){
+			for(int y = 0; y < lineNumber; y++){
+				pointsBuffer[x][y].updateVelocity();
+			}
+		}
+
+		for(int x = 0; x < points.length; x++){
+			for(int y = 0; y < lineNumber; y++){
+				points[x][y].clear();
+			}
+		}
+		for(int x = 0; x < points.length; x++){
+			for(int y = 0; y < lineNumber; y++){
+				Point oldPoint = pointsBuffer[x][y];
+				if(oldPoint.hasCar){
+					Point newPoint = points[(x+oldPoint.velocity)%points.length][0];
+					newPoint.copyFromOther(oldPoint);
+				}
+			}
+		}
 		//todo new iteration
 		this.repaint();
 	}
