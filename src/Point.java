@@ -15,6 +15,7 @@ public class Point {
 		clear();
 		frontNeighbors = new Point[6];
 		hasCar = false;
+		otherLaneNeighbors = new Point[11];
 	}
 
 	public void clicked() {
@@ -72,21 +73,7 @@ public class Point {
 		this.velocity = other.velocity;
 	}
 
-	public void maybeDisappear(){
-		if(hasCar){
-			int rand = ThreadLocalRandom.current().nextInt(0, prob_disappear);
-			if(rand == 0){
-				clear();
-			}
-		}
-	}
-	public void maybeAppear(){
-		if(!hasCar){
-			int rand = ThreadLocalRandom.current().nextInt(0, prob_appear);
-			if(rand == 0){
-				clicked();
-			}
-		}
-	}
+
+
 	//todo changing lanes methods
 }
