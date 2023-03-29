@@ -21,8 +21,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 
 	public Point[][] copyPoints(){
-		Point[][] copyPair = new Point[points.length][lineNumber];
-		for(int i = 0; i < lineNumber; i++){
+		Point[][] copyPair = new Point[points.length][2*lineNumber];
+		for(int i = 0; i < 2*lineNumber; i++){
 			for(int j = 0; j < points.length; j++){
 				copyPair[j][i] = new Point();
 				copyPair[j][i].copyFromOther(points[j][i]);
@@ -82,17 +82,26 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	public void SetLineChange(){
 		for(int i = 0; i < lineNumber; i++){
 			for(int j = 0; j < points.length; j++){
-				boolean isLeft = false, isRight = false;
-				if(points[j][i].hasCar == true && i != 0)
+				boolean isLeft = false, isRight = false, oposLeft = false, oposRight = false;
+				if(points[j][i].hasCar == true && i != 0) {
 					isLeft = isLeftLineBetter(points[j][i]);
-				if(points[j][i].hasCar == true && i != lineNumber-1)
+					oposRight = isRightLineBetter(points[j][i + lineNumber]);
+				}
+				if(points[j][i].hasCar == true && i != lineNumber-1) {
 					isRight = isRightLineBetter(points[j][i]);
-
+					oposLeft = isLeftLineBetter(points[j][i + lineNumber]);
+				}
 				if(isRight == true){
 					points[j][i].isChangingLineToRight = true;
 				}
 				else if(isLeft == true){
 					points[j][i].isChangingLineToLeft = true;
+				}
+				if(oposRight == true){
+					points[j][i + lineNumber].isChangingLineToRight = true;
+				}
+				else if(oposLeft == true){
+					points[j][i + lineNumber].isChangingLineToLeft = true;
 				}
 			}
 		}
@@ -116,12 +125,12 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 			for(int j = 0; j < lineNumber; j++){
 				if(points[i][j].isChangingLineToRight){
 					points[i][j].isChangingLineToRight = false;
-					points[i][j+1].copyFromOther(points[i][j]);
+					points[i][j].rightLaneNeighbors[Point.maxVel].copyFromOther(points[i][j]);
 					points[i][j].clear();
 				}
 				if(points[i][j].isChangingLineToLeft){
 					points[i][j].isChangingLineToLeft = false;
-					points[i][j-1].copyFromOther(points[i][j]);
+					points[i][j].leftLaneNeighbors[Point.maxVel].copyFromOther(points[i][j]);
 					points[i][j].clear();
 				}
 			}
@@ -129,7 +138,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		//todo change lines
 
 		for(int x = 0; x < points.length; x++){
-			for(int y = 0; y < lineNumber; y++){
+			for(int y = 0; y < 2 * lineNumber; y++){
 				points[x][y].updateVelocity();
 			}
 		}
@@ -137,7 +146,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		Point[][] pointsBuffer = copyPoints();
 
 		for(int x = 0; x < points.length; x++){
-			for(int y = 0; y < lineNumber; y++){
+			for(int y = 0; y <2 * lineNumber; y++){
 				points[x][y].clear();
 			}
 		}
@@ -149,6 +158,17 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 					Point newPoint = points[(x+oldPoint.velocity)%points.length][y];
 					newPoint.copyFromOther(oldPoint);
 					if(x+oldPoint.velocity!=(x+oldPoint.velocity)%points.length)
+						carsPassed++;
+				}
+			}
+		}
+		for(int x = 0; x < points.length; x++){
+			for(int y = lineNumber; y < 2 * lineNumber; y++){
+				Point oldPoint = pointsBuffer[x][y];
+				if(oldPoint.hasCar){
+					Point newPoint = points[(points.length + x - oldPoint.velocity)%points.length][y];
+					newPoint.copyFromOther(oldPoint);
+					if(x-oldPoint.velocity!=(x + points.length -oldPoint.velocity)%points.length)
 						carsPassed++;
 				}
 			}
@@ -179,35 +199,66 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 				points[x][y] = new Point();
 
 		for(int i=0; i<random_points_min; i++){
-			if(i%2==0)
-				points[rand_loc[i]][0].clicked();
-			else
-				points[rand_loc[i]][1].clicked();
+			points[rand_loc[i]][i % (2 * lineNumber)].clicked();
+//			if(i%(2*lineNumber)==0)
+//				points[rand_loc[i]][0].clicked();
+//			else
+//				points[rand_loc[i]][1].clicked();
 		}
 
 		for (int x = 0; x < points.length; ++x) {
 			for (int y = 0; y < lineNumber; ++y) {
-				for(int i = 0; i <= 5; i++){
+				for(int i = 0; i <= Point.maxVel; i++){
 					points[x][y].frontNeighbors[i] = points[(x+i+1)%points.length][y];
 				}
 				if(y > 0){
-					for(int i = -5; i <= 5; i++){
-						points[x][y].leftLaneNeighbors[i+5] = points[(points.length+x+i)%points.length][y-1];
+					for(int i = -Point.maxVel; i <= Point.maxVel; i++){
+						points[x][y].leftLaneNeighbors[i+Point.maxVel] = points[(points.length+x+i)%points.length][y-1];
 					}
 				}
 				else {
-					for(int i = -5; i <= 5; i++){
-						points[x][y].leftLaneNeighbors[i+5] = null;
+					for(int i = -Point.maxVel; i <= Point.maxVel; i++){
+						points[x][y].leftLaneNeighbors[i+Point.maxVel] = null;
 					}
 				}
 				if(y < lineNumber-1){
-					for(int i = -5; i <= 5; i++){
-						points[x][y].rightLaneNeighbors[i+5] = points[(points.length+x+i)%points.length][y+1];
+					for(int i = -Point.maxVel; i <= Point.maxVel; i++){
+						points[x][y].rightLaneNeighbors[i+Point.maxVel] = points[(points.length+x+i)%points.length][y+1];
 					}
 				}
 				else {
-					for(int i = -5; i <= 5; i++){
-						points[x][y].rightLaneNeighbors[i+5] = null;
+					for(int i = -Point.maxVel; i <= Point.maxVel; i++){
+						points[x][y].rightLaneNeighbors[i+Point.maxVel] = null;
+					}
+				}
+			}
+		}
+
+		for (int x = 0; x < points.length; ++x) {
+			for (int y = lineNumber; y < 2*lineNumber; ++y) {
+				for(int i = 0; i <= Point.maxVel; i++){
+					points[x][y].frontNeighbors[i] = points[(x+points.length-i-1)%points.length][y];
+				}
+				if(y > lineNumber){
+					for(int i = -Point.maxVel; i <= Point.maxVel; i++){
+						points[x][y].rightLaneNeighbors[Point.maxVel - i] = points[(points.length+x+i)%points.length][y-1];
+					}
+
+				}
+				else {
+					for(int i = -Point.maxVel; i <= Point.maxVel; i++){
+						points[x][y].rightLaneNeighbors[i+Point.maxVel] = null;
+					}
+
+				}
+				if(y < 2*lineNumber-1){
+					for(int i = -Point.maxVel; i <= Point.maxVel; i++){
+						points[x][y].leftLaneNeighbors[Point.maxVel - i] = points[(points.length+x+i)%points.length][y+1];
+					}
+				}
+				else {
+					for(int i = -Point.maxVel; i <= Point.maxVel; i++){
+						points[x][y].leftLaneNeighbors[i+Point.maxVel] = null;
 					}
 				}
 			}
