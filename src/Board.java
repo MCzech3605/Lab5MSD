@@ -4,8 +4,14 @@ import java.awt.Insets;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JComponent;
@@ -13,6 +19,8 @@ import javax.swing.event.MouseInputListener;
 
 public class Board extends JComponent implements MouseInputListener, ComponentListener {
 	private static final long serialVersionUID = 1L;
+	private String savePath="data.txt";
+	private String savePathV="vdata.txt";
 	public static final int lineNumber = 3;
 	public static ArrayList<Integer> iterationCounter = new ArrayList<>();
 	private Point[][] points;
@@ -135,7 +143,6 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 				}
 			}
 		}
-		//todo change lines
 
 		for(int x = 0; x < points.length; x++){
 			for(int y = 0; y < 2 * lineNumber; y++){
@@ -162,10 +169,14 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 				}
 			}
 		}
+		int velSum = 0;
+		int carSum = 0;
 		for(int x = 0; x < points.length; x++){
 			for(int y = lineNumber; y < 2 * lineNumber; y++){
 				Point oldPoint = pointsBuffer[x][y];
 				if(oldPoint.hasCar){
+					carSum++;
+					velSum += oldPoint.velocity;
 					Point newPoint = points[(points.length + x - oldPoint.velocity)%points.length][y];
 					newPoint.copyFromOther(oldPoint);
 					if(x-oldPoint.velocity!=(x + points.length -oldPoint.velocity)%points.length)
@@ -174,7 +185,22 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 			}
 		}
 		iterationCounter.add(carsPassed);
-		//todo new iteration
+		OutputStream os = null;
+		try {
+			os = new FileOutputStream(new File(savePath), true);
+			String toSave = Integer.toString(carsPassed) + "\n";
+			os.write(toSave.getBytes(), 0, toSave.length());
+			os.close();
+			os = new FileOutputStream(new File(savePathV), true);
+			toSave = Double.toString((double) velSum/(double) carSum) + "\n";
+			os.write(toSave.getBytes(), 0, toSave.length());
+			os.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Couldn't save file");
+		} catch (IOException e) {
+			System.out.println("Couldn't save file IO exception");
+		}
+
 		this.repaint();
 	}
 
@@ -188,22 +214,30 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 	private void initialize(int length, int height) {
 		points = new Point[length][height];
-		int random_points_min = 45;
-		int[] rand_loc = new int[random_points_min];
-		for(int i = 0; i < random_points_min; i++) {
-			rand_loc[i] = ThreadLocalRandom.current().nextInt(0, length);
+		int random_points_min = 49;
+		try {
+			Files.writeString(Path.of("data_" + random_points_min + ".txt"), "", StandardCharsets.UTF_8);
+			savePath = "data_" + random_points_min + ".txt";
+			Files.writeString(Path.of("vdata_" + random_points_min + ".txt"), "", StandardCharsets.UTF_8);
+			savePathV = "vdata_" + random_points_min + ".txt";
+		}
+
+		catch (IOException ex) {
+			System.out.print("Invalid Path");
+		}
+		ArrayList<Integer> randNums = new ArrayList<>();
+		for(int i=0; i<points.length; i++){
+			randNums.add(i);
 		}
 
 		for (int x = 0; x < points.length; ++x)
 			for (int y = 0; y < points[x].length; ++y)
 				points[x][y] = new Point();
-
-		for(int i=0; i<random_points_min; i++){
-			points[rand_loc[i]][i % (2 * lineNumber)].clicked();
-//			if(i%(2*lineNumber)==0)
-//				points[rand_loc[i]][0].clicked();
-//			else
-//				points[rand_loc[i]][1].clicked();
+		for(int j = 0; j < 6; j++){
+			Collections.shuffle(randNums);
+			for(int i = 0; 6*i + j < random_points_min; i++){
+				points[randNums.get(i)][j].clicked();
+			}
 		}
 
 		for (int x = 0; x < points.length; ++x) {
