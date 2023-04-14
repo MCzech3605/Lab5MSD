@@ -91,13 +91,17 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		for(int i = 0; i < lineNumber; i++){
 			for(int j = 0; j < points.length; j++){
 				boolean isLeft = false, isRight = false, oposLeft = false, oposRight = false;
+				if(points[j][i + lineNumber].hasCar == true && i != 0){
+					oposRight = isRightLineBetter(points[j][i + lineNumber]);
+				}
 				if(points[j][i].hasCar == true && i != 0) {
 					isLeft = isLeftLineBetter(points[j][i]);
-					oposRight = isRightLineBetter(points[j][i + lineNumber]);
+				}
+				if(points[j][i + lineNumber].hasCar == true && i != lineNumber-1) {
+					oposLeft = isLeftLineBetter(points[j][i + lineNumber]);
 				}
 				if(points[j][i].hasCar == true && i != lineNumber-1) {
 					isRight = isRightLineBetter(points[j][i]);
-					oposLeft = isLeftLineBetter(points[j][i + lineNumber]);
 				}
 				if(isRight == true){
 					points[j][i].isChangingLineToRight = true;
@@ -126,6 +130,12 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 	public void iteration() {
 
+		for(int i = 0; i < points.length; i++){
+			for(int j = 0; j < 2 * lineNumber; j++){
+				if(points[i][j].isGreen)
+					points[i][j].isGreen = false;
+			}
+		}
 		
 		SetLineChange();
 
@@ -133,11 +143,29 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 			for(int j = 0; j < lineNumber; j++){
 				if(points[i][j].isChangingLineToRight){
 					points[i][j].isChangingLineToRight = false;
+					points[i][j].isGreen = true;
 					points[i][j].rightLaneNeighbors[Point.maxVel].copyFromOther(points[i][j]);
 					points[i][j].clear();
 				}
 				if(points[i][j].isChangingLineToLeft){
 					points[i][j].isChangingLineToLeft = false;
+					points[i][j].isGreen = true;
+					points[i][j].leftLaneNeighbors[Point.maxVel].copyFromOther(points[i][j]);
+					points[i][j].clear();
+				}
+			}
+		}
+		for(int i = 0; i < points.length; i++){
+			for(int j = 0; j < 2 * lineNumber; j++){
+				if(points[i][j].isChangingLineToRight){
+					points[i][j].isChangingLineToRight = false;
+					points[i][j].isGreen = true;
+					points[i][j].rightLaneNeighbors[Point.maxVel].copyFromOther(points[i][j]);
+					points[i][j].clear();
+				}
+				if(points[i][j].isChangingLineToLeft){
+					points[i][j].isChangingLineToLeft = false;
+					points[i][j].isGreen = true;
 					points[i][j].leftLaneNeighbors[Point.maxVel].copyFromOther(points[i][j]);
 					points[i][j].clear();
 				}
@@ -329,7 +357,10 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 		for (x = 0; x < points.length; ++x) {
 			for (y = 0; y < points[x].length; ++y) {
-				if(points[x][y].hasCar){
+				if(points[x][y].isGreen){
+					g.setColor(new Color(0, 255, 0));
+				}
+				else if(points[x][y].hasCar){
 					g.setColor(new Color(0,0,0));
 				}
 				else {

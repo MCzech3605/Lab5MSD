@@ -13,6 +13,8 @@ public class Point {
 	public boolean isChangingLineToLeft;
 	public boolean isChangingLineToRight;
 
+	public boolean isGreen;
+
 	public Point() {
 		clear();
 		frontNeighbors = new Point[maxVel+1];
@@ -33,6 +35,7 @@ public class Point {
 	public void clear() {
 		hasCar = false;
 		velocity = 0;
+		isGreen = false;
 	}
 
 	public void updateVelocity() {
@@ -76,6 +79,7 @@ public class Point {
 	public void copyFromOther(Point other){
 		this.hasCar = other.hasCar;
 		this.velocity = other.velocity;
+		this.isGreen = other.isGreen;
 	}
 
 
